@@ -1,38 +1,40 @@
 // 방문 길이
 
-function solution(dirs) {
-    const arr = [...new Array(11)].map(() => new Array(11).fill(0));
-    const dir_dict = {
-        'U': [-1, 0],
-        'D': [1, 0],
-        'R': [0, 1],
-        'L': [0, -1],
-    }
-
-    let present_point = [5, 5];
-    for (const dir of dirs) {
-        const new_row = present_point[0] + dir_dict[dir][0];
-        const new_col = present_point[1] + dir_dict[dir][1];
-
-        if (new_row >=  0 && new_row <= 10 && new_col >= 0 && new_row <= 10) {
-            if (arr[new_row][new_col] === 0) {
-                arr[new_row][new_col] = 1;
-            }
-            present_point = [new_row, new_col];
-        }
-    }
-
-    let answer = 0;
-    arr.forEach(innerArray => {
-        innerArray.forEach(num => {
-            answer += num;
-        });
-    });
-    arr.forEach(row => {
-        console.log(JSON.stringify(row));
-    });
-    return answer;
+function isValidMove(nx, ny) {
+    return nx >= -5 && nx <= 5 && ny >= -5 && ny <= 5;
 }
 
-let dirs = "ULURRDLLU"
-console.log(solution(dirs));
+function updateLocation(x, y, dir) {
+    switch (dir) {
+        case "U":
+            return [x, y + 1];
+        case "D":
+            return [x, y - 1];
+        case "R":
+            return [x + 1, y];
+        case "L":
+            return [x - 1, y];
+    }
+}
+
+function solution(dirs) {
+    let x = 0;
+    let y = 0;
+
+    const visited = new Set();
+
+    for (const dir of dirs) {
+        const [nx, ny] = updateLocation(x, y, dir);
+
+        if (!isValidMove(nx, ny)) {
+            continue;
+        }
+
+        visited.add(`${x}${y}${nx}${ny}`);
+        visited.add(`${nx}${ny}${x}${y}`);
+
+        [x, y] = [nx, ny];
+    }
+
+    return visited.size / 2;
+}
